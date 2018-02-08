@@ -1,0 +1,15 @@
+exportPattern("^[[:alpha:]]+")
+
+importFrom(utils, read.table, write.table, download.file, read.delim)
+importFrom(utils, txtProgressBar, setTxtProgressBar)
+importFrom(stats, aggregate, dbinom, p.adjust)
+importFrom(biomaRt, useMart, getBM, getSequence, exportFASTA, listDatasets)
+importFrom(Biostrings, readAAStringSet, width, AAString, subseq, pairwiseAlignment)
+importFrom(Biostrings, subseq, countPattern, matchPattern, subject, pattern, pid, start, nchar)
+
+importFrom(data.table, setkey)
+importFrom(data.table, data.table)
+importFrom(data.table, fread)
+
+importFrom(stats, ppois)
+importFrom(utils, data, head)

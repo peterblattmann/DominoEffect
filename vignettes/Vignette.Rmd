@@ -1,0 +1,174 @@
+---
+title: "Vignette for DominoEffect package"
+author: "Marija Buljan and Peter Blattmann"
+date: '`r format(Sys.time(), "%d %B %Y")`'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteIndexEntry{Vignette for DominoEffect package}
+  %\usepackage[UTF-8]{inputenc}
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+# knitr::opts_knit$set(root.dir = normalizePath("/Users/mbuljan/Documents/Paket_op/DominoEffect_radna/inst/doc"))
+#library(devtools)
+#knitr::opts_knit$set(root.dir = normalizePath(inst("DominoEffect"))) 
+```
+
+The package can be directly installed from the Bioconductor website.
+```{r, eval=FALSE}
+## try http:// if https:// URLs are not supported
+source('https://bioconductor.org/biocLite.R')
+biocLite('DominoEffect')
+```
+
+
+##Running the package
+Load the package before starting the analysis.
+
+```{r}
+library(DominoEffect)
+```
+
+The package provides example datasets to run the functions.
+
+```{r}
+data("TestData", package = "DominoEffect")
+data("SnpData", package = "DominoEffect")
+data("DominoData", package = "DominoEffect")
+```
+
+## Optional
+The default settings are to use the package-provided data that will be loaded in the objects mutation_dataset, gene_data and snp_data, respectively. Required column names are described below and the user should adher to these when providing their own mutation dataset. Gene information (DominoData) and SNP data (SnpData) correspond to the Ensembl version 73 (GRCh37). Optionally, the user can use data for different Ensembl releases and provide larger SNP datasets. 
+```{r, eval=FALSE}
+mutation_dataset = read.table ("user_file_with_mutations.txt", header = T)
+gene_data = read.table ("user_ensembl_gene_list.txt", header = T)
+snp_data = read.table ("user_population_SNPs_with_frequency.txt", header = T)
+```
+
+## Description
+The package identifies individual amino acid residues, which accumulate a high fraction of the overall mutation load within a protein. Such hotspot mutation residues could have critical functions in regulating cancer-associated cellular processes. After detecting mutation hotspots, the package obtains functional and structural annotations for the affected protein regions as these could aid interpretation of mutation effects. The package is based on the Ensembl version 73 (GRCh37), but it is also flexible with allowing a user to obtain coordinates for different Ensembl releases via the BiomaRt package.
+The package can be run with the default options using the following command:
+
+```{r, message = FALSE, results = "hide"}
+hotspot_mutations <- DominoEffect(mutation_dataset = TestData, gene_data = DominoData, snp_data = SnpData)
+```
+
+Calling package without any parameters will use the same loaded datasets:
+```{r, message = FALSE, eval=FALSE}
+hotspot_mutations <- DominoEffect()
+```
+
+An example mutation set is provided as an object data(TestData, package = "DominoEffect"). It contains mutations reported in a sequencing study for the thyroid cancer (Integrated genomic characterization of papillary thyroid carcinoma, Cell 2014 159(3):676-90, Cancer Genome Atlas Research Network). The mutation_dataset should provided by the user should have the same columns:
+
+```{r, eval= FALSE}
+data("TestData", package = "DominoEffect")
+```
+
+```{r, echo = FALSE}
+kable(head(TestData), row.names = FALSE)
+```
+
+Results of the analysis will be saved as a file Protein_hotspot_residues.txt in the working directory at it will contain positions of hotspot residues as well as information on the protein region affected by the hotspot. We recommend to further use one or more of the tools that prioritizes mutations with a likely deleterious effect and to use additional resources to filter out common population polymorphisms.
+
+```{r, echo = FALSE}
+kable(head(hotspot_mutations), row.names = FALSE)
+```
+
+## Set options
+
+The package can also be ran by modifying any or all of the options that are discussed in the section below:
+
+```{r, eval = FALSE}
+hotspot_mutations <- DominoEffect(mutation_dataset, gene_data, snp_data, min_n_muts, MAF_thresh, flanking_region, poisson.thr, percentage.thr, ratio.thr, approach, write_to_file)
+```
+
+The analysis has several parameters that define what a hotspot residue is. The default values are suggested below, but these can all be easily modified. As a recommendation, we provide values that we found useful when analyzing the pan-cancer dataset, but for smaller cohorts we strongly suggest these to be relaxed. For instance, for smaller cohorts to set: min_n_muts to 3. We recommend the user to try different parameters and if they allow shorter windows around the searched residues to increase the percentage threshold (which defines a minimum fraction of mutations within a window that need to map to a single residue). It is also possible to replace the percentage threshold with a parameter that defines overrepresentation compared to the expected number of mutations at a single residue. Details below.
+
+Define how often a mutation needs to occur on a specific amino acid to be considered as a possible hotspot residue.
+```{r}
+min_n_muts <- 5
+```
+
+Threshold for the minoar allele frequence in the population above which a variant is considered a common variant and will not be assessed as a potential hotspot mutation. 
+```{r}
+MAF.thr <- 0.01
+```
+
+Size of the sequence region (in amino acids) to which the frequency of the muation is compared to. We recommend asking for the hotspot to be significant within windows of different lengths, but it is also possible to use a single window.
+```{r}
+flanking_region <- c(200, 300)
+flanking_region <- c(300)
+```
+
+Statistical threshold for the residues with frequent mutations that should be considered a protein hotspot. The value defines the adjusted p-values after performing a Poisson test and Benjamini-Hochberg correction for multiple testing. 
+```{r}
+poisson.thr <- 0.01
+```
+
+A fraction of mutations within the window that need to fall on a single residue in order for it to be classified as a hotspot.
+```{r}
+percentage.thr <- 0.15
+```
+
+Requirement that a number of mutations on a single residue should exceed what would be expected by chance given a background mutation rate in the window (i.e. the surrounding region). 
+```{r}
+ratio.thr <- 40
+```
+
+Hotspots are always filtered to include only residues that are significant according to the defined p-value threshold (i.e. adjusted Poisson p-value: poisson.thr above). Additionally, the parameter 'approach' defines whether a percentage or overrepresentation should be assessed to define if the residue accumulates a high fraction of mutations within the window. The options are to set the 'approach' parameter to : use "percentage", "ratio" or "both". When "percentage" is used the approach checks for the percentage.thr, when "ratio" it cheks for ratio.thr and when it is defined as "both" than it checks both percentage.thr and ratio.thr. If the user considers the p-value threshold to be sufficient, they can set percentage.thr and ratio.thr to zero.
+```{r}
+approach = "percentage"
+```
+
+If the write_to_file is set to "YES" the result object 'results_w_annotations' will be saved in the working directory as a file 'Protein_hotspot_residues.txt'. The default is "NO".
+```{r, eval = FALSE}
+write_to_file = "YES"
+```
+
+## Analysis
+
+```{r, message = FALSE, results = "hide", eval = FALSE}
+hotspot_mutations <- DominoEffect(mutation_dataset = TestData)
+```
+
+ It is also possible to run separately the function that identifies hotspot mutations. The function: identify_hotspots() can be ran on any unique identifiers, but the same column names as in the example DominoData should be preserved. If using different Ensembl releases, the user should provide a table of the same format, and with the same column names (for this we recommend using online Ensembl BioMart or the R package biomaRt). Ensembl identifiers are necessary for obtaining protein sequences in the function: map_to_func_elem(). 
+
+```{r, message = FALSE}
+hotspot_mutations <- identify_hotspots(mutation_dataset = TestData, gene_data = DominoData, snp_data = SnpData, min_n_muts = 5, MAF_thresh = 0.01, flanking_region = c(200, 300), poisson.thr = 0.01, percentage.thr = 0.15, ratio.thr = 45, approach = "percentage")
+```
+
+If desired, the user can then annotate the identified hotspots using information from the UniProt/Swiss=Prot knowledgebase. Hotspots are identified on the Ensembl sequences. To make sure there are no any discrepancies, during this step sequences are retrieved from the UniProt KB and Ensembl Biomart and then the the Ensembl segment with the hotspot residue (15 aa) is aligned to the UniProt sequence. If different ensembl release than the default is used, two functions should be ran separately and a host address for the respective Ensembl release should be specified in the call to the function: map_to_func_elem(). For instance, for the current release: ens_release="www.ensembl.org" instead of ens_release = "73".
+
+```{r, message = FALSE, eval = FALSE}
+results_w_annotations <- map_to_func_elem(hotspot_mutations, write_to_file = "NO", ens_release = "73")
+```
+
+## MutationData, DominoData, and SnpData
+As input data the package needs these three datasets. We provide a small example mutation data set TestData (see above). 
+
+DominoData (that is used for gene_data) contains basic information for the genes in the Ensembl version 73. This includes: Ensembl gene identifier, Representative transcript identifier (i.e. a transcript with the longest protein coding sequence), cDNA_length of the representative transcript, Gene_name and Associated UniProt identifiers. 
+
+The required format of the gene_data is the following:
+
+```{r, echo = FALSE}
+kable(head(DominoData), row.names = FALSE)
+```
+
+Finally, to exclude common polymorphisms we provide SnpData, a set of SNPs with a population frequency higher than 1% that we obtained from the Ensembl BioMart version 73. The user can also set snp_data = NULL if they do not wish to include this in the analysis. Preferably, they should however use as comprehensive set of population polymorphisms as possible. The dataset has the following format: 
+
+```{r, echo = FALSE}
+kable(head(SnpData), row.names = FALSE)
+```
+
+## Additional
+
+If the user is starting from genomic mutations, we are happy to share a perl script we wrote for mapping these to Ensembl protein residues. Please contact the package maintainers. 
+
+##Session Info
+
+```{r}
+sessionInfo()
+```
+
