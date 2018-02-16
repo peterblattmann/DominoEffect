@@ -27,6 +27,16 @@ identify_hotspots <- function(mutation_dataset = TestData, gene_data = DominoDat
         stop("Flanking region size needs to be numeric.")
     }
 
+    # if gene_data is provided in TxDB format convert to data frame
+    if(class(gene_data) == "TxDb"){
+        gene_data <- import_txdb(gene_data)
+    }
+    
+    # if SnpData is provided in VCF format convert to data frame
+    if(class(snp_data) == "CollapsedVCF"){
+        snp_data <- import_vcf(snp_data, MAF_thresh = MAF_thresh)
+    }
+    
     if(length(snp_data) > 0){
         SnpData.colnames <- c("Chr_name", "Position_on_chr", "Minor_allele_freq")
         
@@ -85,7 +95,7 @@ identify_hotspots <- function(mutation_dataset = TestData, gene_data = DominoDat
         tot_mut_hotsp <- as.numeric(t[s])
         
         # calculate amino acid length of protein
-        length_cdna <- as.numeric (gene_data [gene_data$Ensembl_gene_id==gene, "cDNA_length"])
+        length_cdna <- as.numeric(gene_data[gene_data$Ensembl_gene_id==gene, "cDNA_length"])[1]
         if((length(length_cdna) == 0) || is.na(length_cdna)){
             warning("No cDNA length provided for ", gene, ".")
         } else {

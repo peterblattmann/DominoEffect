@@ -54,7 +54,7 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
     message ("  Assessing sequence agreement and mapping hotspots to functional elements.")
     pb <- txtProgressBar(min = 0, max = nrow(hotspot_results))
 
-    for(i in 1:nrow(hotspot_results)){
+    for(i in seq_len(nrow(hotspot_results))){
         setTxtProgressBar(pb, i)
         #print(i)
         uni_genes <- hotspot_results[i, "Assoc_unip_ids"]
@@ -112,7 +112,7 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
                             uniprot.data = uniprot.data [!(uniprot.data$Type %in% type_to_exclude), ]
                             overlaping.elements = uniprot.data[(uniprot.data$Start <= hotsp.unip) & (uniprot.data$End >= hotsp.unip),]
                         
-                            for (el in 1:nrow (overlaping.elements))
+                            for (el in seq_len(nrow(overlaping.elements)))
                             {
                                 el_type = overlaping.elements[el, "Type"]
                                 el_desc_all = overlaping.elements[el, "Description"]

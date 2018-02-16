@@ -10,9 +10,9 @@
 
   \item{mutation_dataset}{Object containing a table with the mutation data (e.g. TCGA point mutations mapped to protein level).}
 
-  \item{gene_data}{DominoData object containing information about Ensembl gene annotations: gene identifiers and regresentative transcript cDNA length.}
+  \item{gene_data}{Data frame or Txdb object containing information about Ensembl gene annotations: gene identifiers and regresentative transcript cDNA length.}
 
-  \item{snp_data}{Object containing a table with information on population SNPs.}
+  \item{snp_data}{Object containing a table or vcf object with information on population SNPs.}
 
   \item{min_n_muts}{Numeric vector defining a minimum number of mutations that need to occur at the same residue. Default: 5}
 

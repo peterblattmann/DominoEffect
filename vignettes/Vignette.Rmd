@@ -149,6 +149,7 @@ results_w_annotations <- map_to_func_elem(hotspot_mutations, write_to_file = "NO
 As input data the package needs these three datasets. We provide a small example mutation data set TestData (see above). 
 
 DominoData (that is used for gene_data) contains basic information for the genes in the Ensembl version 73. This includes: Ensembl gene identifier, Representative transcript identifier (i.e. a transcript with the longest protein coding sequence), cDNA_length of the representative transcript, Gene_name and Associated UniProt identifiers. 
+The DominoData can also be provided as an TxDB object obtained from the makeTxDbFromEnsembl function (Genomic Features package), however, the functional annotation of hotspots will not be possible as this relies on Uniprot identifiers. 
 
 The required format of the gene_data is the following:
 
@@ -156,7 +157,7 @@ The required format of the gene_data is the following:
 kable(head(DominoData), row.names = FALSE)
 ```
 
-Finally, to exclude common polymorphisms we provide SnpData, a set of SNPs with a population frequency higher than 1% that we obtained from the Ensembl BioMart version 73. The user can also set snp_data = NULL if they do not wish to include this in the analysis. Preferably, they should however use as comprehensive set of population polymorphisms as possible. The dataset has the following format: 
+Finally, to exclude common polymorphisms we provide SnpData, a set of SNPs with a population frequency higher than 1% that we obtained from the Ensembl BioMart version 73. The user can also set snp_data = NULL if they do not wish to include this in the analysis. Preferably, they should however use as comprehensive set of population polymorphisms as possible. The SnpData can also be provided as an vcf object (see VariantAnnotation package). The dataset has the following format: 
 
 ```{r, echo = FALSE}
 kable(head(SnpData), row.names = FALSE)
