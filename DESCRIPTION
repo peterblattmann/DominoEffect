@@ -13,7 +13,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: R(>= 3.5)
 Imports: biomaRt, data.table, utils, stats, Biostrings, SummarizedExperiment, 
-    VariantAnnotation, AnnotationDbi, GenomeInfoDb, IRanges
+    VariantAnnotation, AnnotationDbi, GenomeInfoDb, IRanges, GenomicRanges
 Suggests: knitr, testthat 
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr

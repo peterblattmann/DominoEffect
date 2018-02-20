@@ -43,7 +43,6 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
     patient_id <- MutationData.colnames[5]
     genomic_coord <- MutationData.colnames[6]
     
-    
     if(sum(colnames(mutation_dataset) %in% MutationData.colnames) == 8){
         mutation_dataset <- unique(mutation_dataset[, MutationData.colnames])
     } else {
@@ -54,6 +53,7 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
     
     DominoData.colnames <- c("Ensembl_gene_id","Representative_tr", 
                              "cDNA_length", "Gene_name", "Uniprot_id")
+    
     if(sum(colnames(gene_data) %in% DominoData.colnames) == 5){
         gene_data <- unique(gene_data[, DominoData.colnames])
     } else {
@@ -64,37 +64,80 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
     if(!(length(flanking_region) == 2L | length(flanking_region) == 1L)){
         stop("Flanking region size needs to be one or two integers.")
     }
-
+    ###
+    
+    # unlist GRangesList object
+    if(class(mutation_dataset) == "GRangesList"){
+        mutation_dataset <- unlist(mutation_dataset, use.names=FALSE)
+        data_type <- class(mutation_dataset)
+    }
+    
+    # retrieve data from GRanges object
+    if(class(mutation_dataset) == "GRanges"){
+        chr_nu <- as.numeric(seqnames (mutation_dataset))
+        positions <- start(mutation_dataset)
+        single_nt_ctrl <- end(mutation_dataset)
+        genomic_pos <- paste(chr_nu, positions, sep = ":")
+        
+        mut_meta_data <- as.data.frame(GenomicRanges::mcols(mutation_dataset))
+        
+        cols <- colnames(mut_meta_data)
+        ref <- grep("ref", cols, ignore.case = TRUE)
+        mut <- grep("mut", cols, ignore.case = TRUE)
+        aa <- grep("aa", cols, ignore.case = TRUE)
+        ref_aa <- intersect(ref, aa)
+        mut_aa <- intersect(mut, aa)
+        patient <- grep("patient", cols, ignore.case = TRUE)
+        gene_ident <- grep("gene", cols, ignore.case = TRUE)
+        prot <- grep("protein", cols, ignore.case = TRUE)
+        ppos <- grep("loc", cols, ignore.case = TRUE)
+        prot_pos <- intersect(prot, ppos)
+        mutation_dataset <- cbind(mut_meta_data[, c(gene_ident, prot_pos, 
+                                                     ref_aa, mut_aa, patient)], 
+                                   genomic_pos)
+        ok_rows <- positions == single_nt_ctrl
+        mutation_dataset <- mutation_dataset[ok_rows,]
+        colnames(mutation_dataset) <- c ("Ensembl_gene_id", "Protein_residue", 
+                                         "Original_aa", "Mutated_aa", 
+                                         "Patient_id", "Genomic_coordinate")
+    }
+    
     # if gene_data is provided in TxDB format convert to data frame
     if(class(gene_data) == "TxDb"){
         gene_data <- import_txdb(gene_data)
     }
     
-    # if SnpData is provided in VCF format convert to data frame
-    if(class(snp_data) == "CollapsedVCF"){
-        snp_data <- import_vcf(snp_data, MAF_thresh = MAF_thresh)
-    }
-    
     if(length(snp_data) > 0){
-        SnpData.colnames <- c("Chr_name", "Position_on_chr", 
-                              "Minor_allele_freq")
-        
-        if(sum(SnpData.colnames %in% colnames(snp_data)) != 3){
-            stop("SNP table needs to contain the following columns: Chr_name, 
-                 Position_on_chr, Minor_allele_freq.")
+        ### convert data.frame into GPos 
+        if(class(snp_data) == "data.frame"){
+            chr_info <- paste("chr", snp_data$Chr_name,":", 
+                              snp_data$Position_on_chr, "-", 
+                              snp_data$Position_on_chr, sep = "")
+            freq_info <- snp_data$Minor_allele_freq
+            snp_data <- GPos(chr_info)
+            GenomicRanges::mcols(snp_data)$Minor_allele_freq <- freq_info
         }
         
-        if(class(snp_data[,"Minor_allele_freq"]) != "numeric"){
-            stop("Minor_allele_freq must be of type numeric.")
+        ### convert vcf into GPos 
+        if(class(snp_data) == "CollapsedVCF"){
+            vcf_table <- info(snp_data)    ### za frequency
+            coords <- rowRanges(snp_data)
+            common_vars <- row.names(vcf_table[vcf_table$LDAF > MAF_thresh, ])
+            coords_common_vars <- coords[common_vars, ]
+            variant_start <- start(ranges(coords_common_vars))
+            variant_end <- end(ranges(coords_common_vars))
+            snps <- variant_start == variant_end
+            chromosomes <- as.character(seqnames(coords_common_vars[snps]))
+            freq_info <- vcf_table[common_vars[snps],"LDAF"]
+            chr_info <- paste("chr", chromosomes,":", 
+                              variant_start[snps], "-", variant_end[snps], sep = "")
+            snp_data <- GPos(chr_info)
+            GenomicRanges::mcols(snp_data)$Minor_allele_freq <- freq_info
         }
         
-        if(length(MAF_thresh) > 0){
-            snp_data <- snp_data[snp_data[,"Minor_allele_freq"] > MAF_thresh, ]
-        }
-        
-        snp_data <- snp_data[,SnpData.colnames]
-        snp_pos <- paste(snp_data[,"Chr_name"], snp_data[,"Position_on_chr"], 
-                         sep = ":")
+        snp_high_freq <- snp_data[snp_data$Minor_allele_freq > MAF_thresh]
+        snp_pos <- paste(as.numeric(seqnames(snp_high_freq)), 
+                         pos(snp_high_freq), sep = ":")
         
         # filter out all snps
         muts_snps <- mutation_dataset[,genomic_coord] %in% snp_pos
@@ -104,9 +147,7 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
             message("  ", sum(muts_snps), " mutations overlap with common 
                     population SNPs and were removed.")
         }
-    } else {
-        warning("No SNP-table provided.")
-    }
+    } else {warning("No SNP-table provided.")}
     ###
     
     ns_mut_dataset <- mutation_dataset[
@@ -114,6 +155,7 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
             as.character(mutation_dataset[,mutated_aa]), ]
     ns_mut_dataset <- unique(ns_mut_dataset[,c(gene_id,protein_res,patient_id)])
 
+    
     # count how many times mutation exists
     ns_mut_dataset_key <- paste(ns_mut_dataset[,gene_id],
                                      ns_mut_dataset[,protein_res], sep = "-")

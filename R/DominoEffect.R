@@ -6,9 +6,11 @@ ratio.thr = 45, approach = "percentage", write_to_file = "NO"){
 
     results <- identify_hotspots(mutation_dataset, gene_data, snp_data,
                                  min_n_muts, MAF_thresh, flanking_region,
-                                 poisson.thr, percentage.thr, ratio.thr, approach)
+                                 poisson.thr, percentage.thr, ratio.thr, 
+                                 approach)
 
-    hotspot_mutations <- map_to_func_elem(results, write_to_file, ens_release = "73")
+    hotspot_mutations <- map_to_func_elem(results, write_to_file, 
+                                          ens_release = "73")
     message ("   ***FINISHED***")
     return(hotspot_mutations)
 }

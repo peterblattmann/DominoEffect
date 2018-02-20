@@ -56,7 +56,8 @@ align_to_unip <- function(ens.seq, uni.seq, ensembl_mut_position){
             {
                 pattern_width = width(seq.match[count_i])
                 if ((aa.match == "go") & (pattern_width == best.match)) {
-                    identity.subseq <- pid(alignment.subseq[count_i], type = "PID3")
+                    identity.subseq <- pid(alignment.subseq[count_i], 
+                                           type = "PID3")
                     if ((identity.subseq/100*best.match) >= 13) {
                         ## problem with gaps is when the beginning doesn't 
                         ## start there when we address that we can properly 

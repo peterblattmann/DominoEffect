@@ -39,6 +39,12 @@ data("SnpData", package = "DominoEffect")
 data("DominoData", package = "DominoEffect")
 ```
 
+These can be used to run the package and obtain an example result data frame:
+```{r, eval=FALSE}
+DominoEffect(TestData, DominoData, SnpData)
+```
+
+
 ## Optional
 The default settings are to use the package-provided data that will be loaded in the objects mutation_dataset, gene_data and snp_data, respectively. Required column names are described below and the user should adher to these when providing their own mutation dataset. Gene information (DominoData) and SNP data (SnpData) correspond to the Ensembl version 73 (GRCh37). Optionally, the user can use data for different Ensembl releases and provide larger SNP datasets. 
 ```{r, eval=FALSE}
@@ -57,7 +63,7 @@ hotspot_mutations <- DominoEffect(mutation_dataset = TestData,
 ```
 
 
-An example mutation set is provided as an object data(TestData, package = "DominoEffect"). It contains mutations reported in a sequencing study for the thyroid cancer (Integrated genomic characterization of papillary thyroid carcinoma, Cell 2014 159(3):676-90, Cancer Genome Atlas Research Network). The mutation_dataset should provided by the user should have the same columns:
+An example mutation set is provided as an object data(TestData, package = "DominoEffect"). It contains mutations reported in a sequencing study for the thyroid cancer (Integrated genomic characterization of papillary thyroid carcinoma, Cell 2014 159(3):676-90, Cancer Genome Atlas Research Network). The mutation_dataset should provided by the user should have the same columns (see below). The Mutation data can also be provided as a GRangesList or GRanges object (see GenomicRanges package). 
 
 ```{r, eval= FALSE}
 data("TestData", package = "DominoEffect")
@@ -164,11 +170,19 @@ The required format of the gene_data is the following:
 kable(head(DominoData), row.names = FALSE)
 ```
 
-Finally, to exclude common polymorphisms we provide SnpData, a set of SNPs with a population frequency higher than 1% that we obtained from the Ensembl BioMart version 73. The user can also set snp_data = NULL if they do not wish to include this in the analysis. Preferably, they should however use as comprehensive set of population polymorphisms as possible. The SnpData can also be provided as an vcf object (see VariantAnnotation package). The dataset has the following format: 
+Finally, to exclude common polymorphisms we provide SnpData, a set of SNPs with a population frequency higher than 1% that we obtained from the Ensembl BioMart version 73. The user can also set snp_data = NULL if they do not wish to include this in the analysis. Preferably, they should however use as comprehensive set of population polymorphisms as possible. The SnpData can also be provided as an vcf object (see VariantAnnotation package) or GPo object (see GenomicRanges package). The dataset has the following format: 
 
 ```{r, echo = FALSE}
 kable(head(SnpData), row.names = FALSE)
 ```
+
+## Convert results into GPo object
+The genomic information on the hotspot mutations can be converted into a GPo object for further analyses in other Bioconductor packages. 
+```{r, echo = FALSE}
+hotspot_mutations.GPo <- GPo_of_hotspots(hotspot_mutations)
+head(hotspot_mutations.GPo)
+```
+
 
 ## Additional
 

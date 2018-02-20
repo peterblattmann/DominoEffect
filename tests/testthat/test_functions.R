@@ -51,12 +51,33 @@ test_that("identify_hotspots",{
 })
 
 test_that("DominoEffect",{
+    data("SnpData", package = "DominoEffect")
+    data("TestData", package = "DominoEffect")
+    data("DominoData", package = "DominoEffect")
     
- 
+    hotspot_residues <- DominoEffect(mutation_dataset = TestData,
+                                     gene_data = DominoData,
+                                     snp_data = SnpData)
+    expect_that("P50148" %in% hotspot_residues$Assoc_unip_ids, equals(TRUE))
+    
+    hotspot_residues <- DominoEffect(mutation_dataset = TestData,
+                                     gene_data = DominoData, snp_data = SnpData, percentage.thr = 0.90)
+    expect_that(unique(hotspot_residues$Gene), equals(c("GNAQ", "GNA11", "PRMT8")))
+    
+    hotspot_residues <- DominoEffect(mutation_dataset = TestData,
+                                     gene_data = DominoData, snp_data = SnpData, min_n_muts = 30)
+    expect_that(unique(hotspot_residues$Gene), equals(c("GNAQ", "GNA11")))
 })
 
 test_that("map_to_func_elem",{
+    data("SnpData", package = "DominoEffect")
+    data("TestData", package = "DominoEffect")
+    data("DominoData", package = "DominoEffect")
+    hotspot_mutations <- identify_hotspots(mutation_dataset = TestData,
+                                           gene_data = DominoData, snp_data = SnpData)
     
-    
+    mapped_to_prot = map_to_func_elem(hotspot_mutations)
+    expect_that(mapped_to_prot[mapped_to_prot$Gene == "CHEK2", "Prot_length"], equals(586))
+    expect_that(grep ("kinase", mapped_to_prot$Protein_funcional_region), equals(5))
 })
 
