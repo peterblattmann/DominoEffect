@@ -1,4 +1,13 @@
-exportPattern("^[[:alpha:]]+")
+export(align_to_unip)
+export(calculate_boundary)
+export(DominoEffect)
+export(identify_hotspots)
+export(import_txdb)
+export(import_vcf)
+export(map_to_func_elem)
+
+importClassesFrom(VariantAnnotation, CollapsedVCF)
+importClassesFrom(Biostrings, AAString)
 
 importFrom(utils, read.table, write.table, download.file, read.delim)
 importFrom(utils, txtProgressBar, setTxtProgressBar)

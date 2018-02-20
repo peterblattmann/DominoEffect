@@ -1,11 +1,9 @@
-utils::globalVariables(c("TXTYPE"))
-
 import_txdb <- function(txdb_object){
     if(class(txdb_object) != "TxDb"){
         stop("Input file needs to be of class TxDb")
     }
     genes <- keys(txdb_object, keytype = "GENEID")
-    EnsGenes <- select(txdb_object, key = genes, columns = c("GENEID", "TXNAME", "TXTYPE", "CDSID", "CDSSTART", "CDSEND"), keytype = "GENEID")
+    EnsGenes <- select(txdb_object, keys = genes, columns = c("GENEID", "TXNAME", "TXTYPE", "CDSID", "CDSSTART", "CDSEND"), keytype = "GENEID")
     EnsGenes <- subset(EnsGenes, TXTYPE == "protein_coding")
     EnsGenes$CDS_length <- abs(EnsGenes$CDSEND - EnsGenes$CDSSTART + 1)
     

@@ -2,8 +2,8 @@
 \alias{identify_hotspots}
 \title{Identify hotspots}
 \usage{
-  identify_hotspots(mutation_dataset = TestData, gene_data = DominoData,
-  snp_data = SnpData, min_n_muts = 5, MAF_thresh = 0.01, flanking_region = c(200, 300), 
+  identify_hotspots(mutation_dataset, gene_data,
+  snp_data, min_n_muts = 5, MAF_thresh = 0.01, flanking_region = c(200, 300), 
   poisson.thr = 0.01, percentage.thr = 0.15, ratio.thr = 45, approach = "percentage")
 }
 \arguments{
@@ -38,8 +38,8 @@
 data("SnpData", package = "DominoEffect")
 data("TestData", package = "DominoEffect")
 data("DominoData", package = "DominoEffect")
-hotspot_mutations <- identify_hotspots(mutation_dataset = TestData)
-hotspot_mutations <- identify_hotspots(mutation_dataset = TestData, flanking_region = 300)
+hotspot_mutations <- identify_hotspots(mutation_dataset = TestData, 
+   gene_data = DominoData, snp_data = SnpData)
 }
 \author{
   Marija Buljan <buljan@imsb.biol.ethz.ch>

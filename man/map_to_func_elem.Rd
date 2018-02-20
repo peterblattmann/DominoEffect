@@ -22,7 +22,7 @@ data("SnpData", package = "DominoEffect")
 
 hotspot_mutations <- identify_hotspots(TestData, DominoData, SnpData)
 hotspot_mutations <- map_to_func_elem(hotspot_mutations, 
-write_to_file = "WRITE", ens_release = "73")
+write_to_file = "NO", ens_release = "73")
 
 head(hotspot_mutations)
 }

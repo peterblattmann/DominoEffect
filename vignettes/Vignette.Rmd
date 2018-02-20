@@ -52,13 +52,10 @@ The package identifies individual amino acid residues, which accumulate a high f
 The package can be run with the default options using the following command:
 
 ```{r, message = FALSE, results = "hide"}
-hotspot_mutations <- DominoEffect(mutation_dataset = TestData, gene_data = DominoData, snp_data = SnpData)
+hotspot_mutations <- DominoEffect(mutation_dataset = TestData, 
+                                  gene_data = DominoData, snp_data = SnpData)
 ```
 
-Calling package without any parameters will use the same loaded datasets:
-```{r, message = FALSE, eval=FALSE}
-hotspot_mutations <- DominoEffect()
-```
 
 An example mutation set is provided as an object data(TestData, package = "DominoEffect"). It contains mutations reported in a sequencing study for the thyroid cancer (Integrated genomic characterization of papillary thyroid carcinoma, Cell 2014 159(3):676-90, Cancer Genome Atlas Research Network). The mutation_dataset should provided by the user should have the same columns:
 
@@ -130,19 +127,29 @@ write_to_file = "YES"
 ## Analysis
 
 ```{r, message = FALSE, results = "hide", eval = FALSE}
-hotspot_mutations <- DominoEffect(mutation_dataset = TestData)
+hotspot_mutations <- DominoEffect(mutation_dataset = TestData, 
+                                  gene_data = DominoData, snp_data = SnpData)
 ```
 
  It is also possible to run separately the function that identifies hotspot mutations. The function: identify_hotspots() can be ran on any unique identifiers, but the same column names as in the example DominoData should be preserved. If using different Ensembl releases, the user should provide a table of the same format, and with the same column names (for this we recommend using online Ensembl BioMart or the R package biomaRt). Ensembl identifiers are necessary for obtaining protein sequences in the function: map_to_func_elem(). 
 
 ```{r, message = FALSE}
-hotspot_mutations <- identify_hotspots(mutation_dataset = TestData, gene_data = DominoData, snp_data = SnpData, min_n_muts = 5, MAF_thresh = 0.01, flanking_region = c(200, 300), poisson.thr = 0.01, percentage.thr = 0.15, ratio.thr = 45, approach = "percentage")
+hotspot_mutations <- identify_hotspots(mutation_dataset = TestData, 
+                                       gene_data = DominoData, 
+                                       snp_data = SnpData, min_n_muts = 5, 
+                                       MAF_thresh = 0.01, 
+                                       flanking_region = c(200, 300), 
+                                       poisson.thr = 0.01, 
+                                       percentage.thr = 0.15, ratio.thr = 45, 
+                                       approach = "percentage")
 ```
 
 If desired, the user can then annotate the identified hotspots using information from the UniProt/Swiss=Prot knowledgebase. Hotspots are identified on the Ensembl sequences. To make sure there are no any discrepancies, during this step sequences are retrieved from the UniProt KB and Ensembl Biomart and then the the Ensembl segment with the hotspot residue (15 aa) is aligned to the UniProt sequence. If different ensembl release than the default is used, two functions should be ran separately and a host address for the respective Ensembl release should be specified in the call to the function: map_to_func_elem(). For instance, for the current release: ens_release="www.ensembl.org" instead of ens_release = "73".
 
 ```{r, message = FALSE, eval = FALSE}
-results_w_annotations <- map_to_func_elem(hotspot_mutations, write_to_file = "NO", ens_release = "73")
+results_w_annotations <- map_to_func_elem(hotspot_mutations, 
+                                          write_to_file = "NO", 
+                                          ens_release = "73")
 ```
 
 ## MutationData, DominoData, and SnpData

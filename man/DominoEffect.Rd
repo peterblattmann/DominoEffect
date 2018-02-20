@@ -2,11 +2,11 @@
 \alias{DominoEffect}
 \title{Identification of significant mutation hotspot residues.}
 \usage{
-  DominoEffect(mutation_dataset = TestData, gene_data = DominoData, snp_data = SnpData,
+  DominoEffect(mutation_dataset, gene_data, snp_data,
 min_n_muts = 5, MAF_thresh = 0.01,
 flanking_region = c(200, 300),
 poisson.thr = 0.01, percentage.thr = 0.15,
-ratio.thr = 45, approach = "percentage", write_to_file = "WRITE")
+ratio.thr = 45, approach = "percentage", write_to_file = "NO")
 }
 \arguments{
   \item{mutation_dataset}{Object containing a table with the mutation data (e.g. TCGA point mutations mapped to protein level).}
@@ -31,7 +31,7 @@ ratio.thr = 45, approach = "percentage", write_to_file = "WRITE")
 
   \item{approach}{Option to define selection criteria to use precentage.thr or ratio.thr as criterion for finding single residue mutation clusters. Options: "both", "percentage" or "ratio". Default = "percentage"}
 
-  \item{write_to_file}{Option if the identified and annotated hotspots should be written to a file. Default: WRITE}
+  \item{write_to_file}{Option if the identified and annotated hotspots should be written to a file (YES or NO). Default: NO}
 
 }
 \value{Results table}
@@ -45,7 +45,7 @@ data("DominoData", package = "DominoEffect")
 
 hotspot_mutations <- DominoEffect(mutation_dataset = TestData, 
 gene_data = DominoData, snp_data = SnpData)
-hotspot_mutations <- DominoEffect(mutation_dataset = TestData)
+
 }
 \author{
   Marija Buljan <buljan@imsb.biol.ethz.ch>

@@ -1,4 +1,9 @@
 map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release = "73"){
+    ## Checking for argument requirements
+    if(!(write_to_file %in% c("YES", "NO"))){
+        stop("write_to_file should either be YES or NO")
+    }
+    ###
     
     message ("  Obtaining sequences of proteins encoded by the representative Ensembl transcripts.")
     
@@ -23,7 +28,7 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
         gene_unip <- hotspot_results [hotspot_results$Ensembl_id==gene_ens, "Assoc_unip_ids"]
         assoc_unip_ids <- as.character(gene_unip)
 
-        if(length(grep(",", assoc_unip_ids)) > 0){
+        if(length(grep(",", assoc_unip_ids))){
             assoc_unip_ids <- trimws(unlist(strsplit(assoc_unip_ids, ",")))
         }
             
@@ -79,23 +84,24 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
             # warning ("No UniProtKB identifier available for ensembl_gene: ", ensembl_gene)
         }
         else {
+            ens.seq <- gsub("\\*", "", ens.seq)
             ens.seq <- AAString(ens.seq)
-            ens.seq = gsub ("\\*", "", ens.seq)
             
             for (id.uniprot in ids.uniprot) {
-                uni.seq <- as.character (uni.sequences[[id.uniprot]])
-                uni.seq = gsub ("\\*", "", uni.seq)
+                uni.seq <- as.character(uni.sequences[[id.uniprot]])
+                uni.seq <- gsub ("\\*", "", uni.seq)
+                uni.seq <- AAString(uni.seq)
                 
-                names_details = names (uni.sequences[id.uniprot])
-                to_unip_access = unlist(strsplit(names_details, "\\|"))
-                unip_access = to_unip_access[2]
+                names_details <- names (uni.sequences[id.uniprot])
+                to_unip_access <- unlist(strsplit(names_details, "\\|"))
+                unip_access <- to_unip_access[2]
                 
-                if (length(ens.seq) > 0 & length(uni.seq) > 0)
+                if(length(ens.seq) & length(uni.seq))
                 {
                     #print (ensembl_transcript)
                     #print (unip_access)
                     
-                    if (ens.seq == uni.seq) {
+                    if(identical(ens.seq, uni.seq)){
                         hotsp.unip <- ensembl_mut_position
                         status <- "ok_match"
                     } else {
@@ -106,24 +112,22 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
                     
                     if (status == "ok_match") {
                         uniprot.data <- gff.file[[unip_access]]
-                        if(length(uniprot.data) > 0){
+                        if(length(uniprot.data)){
                             type_to_exclude = c ("CHAIN", "SEQUENCE CONFLICT", "NATURAL VARIANT", "VAR_SEQ", "TOPO_DOM", "STRAND", "HELIX", "COILED", "COMPBIAS", "NON_TER", "TURN", "MUTAGENESIS", "ALTERNATIVE SEQUENCE", "MODIFIED RESIDUE")
                             uniprot.data$Type = toupper (uniprot.data$Type)
                             uniprot.data = uniprot.data [!(uniprot.data$Type %in% type_to_exclude), ]
                             overlaping.elements = uniprot.data[(uniprot.data$Start <= hotsp.unip) & (uniprot.data$End >= hotsp.unip),]
                         
-                            for (el in seq_len(nrow(overlaping.elements)))
-                            {
-                                el_type = overlaping.elements[el, "Type"]
-                                el_desc_all = overlaping.elements[el, "Description"]
-                                el_desc_spl = unlist(strsplit(as.character(el_desc_all), ";"))
-                                all_notes = grep ("Note", el_desc_spl)
-                                for (w_note in all_notes)
-                                {
-                                    note = el_desc_spl[w_note]
-                                    note = gsub ("Note=", "", note)
-                                    el_type = tolower (el_type)
-                                    func_elem = paste (el_type, note, sep = ": ")
+                            for (el in seq_len(nrow(overlaping.elements))){
+                                el_type <- overlaping.elements[el, "Type"]
+                                el_desc_all <- overlaping.elements[el, "Description"]
+                                el_desc_spl <- unlist(strsplit(as.character(el_desc_all), ";"))
+                                all_notes <- grep ("Note", el_desc_spl)
+                                for(w_note in all_notes){
+                                    note <- el_desc_spl[w_note]
+                                    note <- gsub ("Note=", "", note)
+                                    el_type <- tolower (el_type)
+                                    func_elem <- paste (el_type, note, sep = ": ")
                                     unip_func_elem <- c(unip_func_elem, func_elem)
                                 }
                             }
@@ -131,7 +135,7 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
                     }
                 }
                 unip_func_elem = unique (unip_func_elem)
-                if(length(unip_func_elem) > 0){
+                if(length(unip_func_elem)){
                     hotspot_results[hotspot_results$Ensembl_id == ensembl_gene & hotspot_results$Prot_position == ensembl_mut_position, "Protein_funcional_region"] <- paste(unip_func_elem, collapse ="; ")
                 } else {
                     hotspot_results[hotspot_results$Ensembl_id == ensembl_gene & hotspot_results$Prot_position == ensembl_mut_position, "Protein_funcional_region"] <- "NA"

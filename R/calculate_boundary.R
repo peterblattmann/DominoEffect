@@ -1,66 +1,51 @@
 calculate_boundary <- function(mut_pos_numeric, length_aa, flanking_region){
-    if(length(flanking_region) == 1){
-        flanking_region = c(flanking_region, flanking_region)
+    ### Checking for argument requirements
+    if(length(mut_pos_numeric) != 1L){
+        stop("mut_pos_numeric must be an integer.")
     }
-    if (!(flanking_region[1] < flanking_region[2])) {
-        tempp = flanking_region[1]
-        flanking_region[1] = flanking_region[2]
-        flanking_region[2] = tempp
+    
+    if(length(length_aa) != 1L){
+        stop("length_aa must be an integer.")
     }
-
-    # divide flanking region by 2
-    flanking_region <- flanking_region / 2
-
+    
+    if(length(flanking_region) != 2L){
+        if(length(flanking_region) == 1L){
+            flanking_region <- c(flanking_region, flanking_region)
+        } else {stop("flanking_region must be one or two integers")}
+    }
+    ###
+    
+    # sort and divide flanking region by 2
+    flanking_region <- sort(flanking_region)/2
+    
     # calculate boundary positions including flanking base pairs
-    min1 <- round (mut_pos_numeric - flanking_region[1])
-    plus1 <- round (mut_pos_numeric + flanking_region[1])
-    min2 <- round (mut_pos_numeric - flanking_region[2])
-    plus2 <- round (mut_pos_numeric + flanking_region[2])
+    min <- round(mut_pos_numeric - flanking_region)
+    plus <- round(mut_pos_numeric + flanking_region)
+    left_boundary <- right_boundary <- rep(NA, 2)
 
-    if ((min1 >= 1) && (plus1 <= length_aa)) {
-        to_the_left1 <- min1
-        to_the_right1 <- plus1
-    } else if (min1 < 1) {
-        to_the_left1 <- 1
-        rest <- 2 * flanking_region[1] - (mut_pos_numeric - 1)
-        to_the_right1 <- mut_pos_numeric + rest
-        temp <- to_the_right1
-        if (temp > length_aa) {
-          to_the_right1 <- length_aa
+    for(i in seq_len(length(flanking_region))){
+        # if region is in the middle of sequence it does not need to shift
+        if ((min[i] >= 1) && (plus[i] <= length_aa)) {
+            left_boundary[i] <- min[i]
+            right_boundary[i] <- plus[i]
+        } 
+        
+        #if region is at the beginning, start region at 1
+        else if (min[i] < 1) {
+            left_boundary[i] <- 1
+            right_boundary[i] <- 1 + 2*flanking_region[i]
+            if(right_boundary[i] > length_aa){right_boundary[i] <- length_aa}
+        } 
+        
+        #if region is at the end, end region at maximum position
+        else if (plus[i] > length_aa) {
+            right_boundary[i] <- length_aa
+            left_boundary[i] <-  length_aa - 2*flanking_region[i]  
+            if(left_boundary[i] < 1){left_boundary[i] <- 1}
         }
-    } else if (plus1 > length_aa) {
-        to_the_right1 <- length_aa
-        rest <- 2 * flanking_region[1] - (length_aa - mut_pos_numeric)
-        to_the_left1 <- mut_pos_numeric - rest
-        temp <- to_the_left1
-        if(temp < 1){
-            to_the_left1 = 1
-        }
+        
     }
-
-    if ((min2 >= 1) && (plus2 <= length_aa)) {
-        to_the_left2 <- min2
-        to_the_right2 <- plus2
-    } else if (min2 < 1) {
-        to_the_left2 <- 1
-        rest <- 2 * flanking_region[2] - (mut_pos_numeric - 1)
-        to_the_right2 <- mut_pos_numeric + rest
-        temp <- to_the_right2
-        if (temp > length_aa) {
-            to_the_right2 <- length_aa
-        }
-    } else if (plus2 > length_aa) {
-        to_the_right2 <- length_aa
-        rest <- 2 * flanking_region[2] - (length_aa - mut_pos_numeric)
-        to_the_left2 <- mut_pos_numeric - rest
-        temp <- to_the_left2
-        if(temp < 1){
-            to_the_left2 = 1
-        }
-    }
-
-    return(list(
-      region_1 = c(to_the_left1, to_the_right1),
-      region_2 = c(to_the_left2, to_the_right2)
-    ))
+ 
+    return(list(region_1 = c(left_boundary[1], right_boundary[1]),
+                region_2 = c(left_boundary[2], right_boundary[2])))
   }
