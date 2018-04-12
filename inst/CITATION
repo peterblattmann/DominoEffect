@@ -1,0 +1,21 @@
+citHeader("To cite the DominoEffect package in publications use:")
+
+citEntry(entry="article",  
+         title  = "Systematic characterization of pan-cancer mutation clusters",
+                  author = personList(
+                  person(given="Marija", family="Buljan"),
+                  person(given="Peter", family="Blattmann"),
+                  person(given="Ruedi", family="Aebersold"),
+                  person(given="Michael", family="Boutros")),
+          journal = "Molecular Systems Biology",
+         year = "2018",
+         volume = "14",
+         issue = "3",
+         pages = "e7974",
+         doi="10.15252/msb.20177974",
+         url="https://doi.org/10.15252/msb.20177974",
+         textVersion = paste("Buljan M, Blattmann P, Aebersold R, and Boutros M.",
+           "Systematic characterization of pan-cancer mutation clusters",
+           "Molecular Systems Biology (2018) 14, e7974")
+         )
+         
