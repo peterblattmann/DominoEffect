@@ -14,8 +14,26 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
         ens_database <- ens_release
     }
     
-    ensembl <- useMart(biomart="ENSEMBL_MART_ENSEMBL", host = ens_database, dataset = "hsapiens_gene_ensembl")
+    #####
+    # to fail gracefully if Ensembl is down
+    # code from http://bioconductor.org/developers/how-to/web-query/
+    N.TRIES <- as.integer(5)
+    stopifnot(length(N.TRIES) == 1L, !is.na(N.TRIES))
+    
+    while (N.TRIES > 0L) {
+        ensembl <- tryCatch(useMart(biomart="ENSEMBL_MART_ENSEMBL", host = ens_database, dataset = "hsapiens_gene_ensembl"), error=identity)
+        if (!inherits(ensembl, "error"))
+            break
+        N.TRIES <- N.TRIES - 1L
+    }
+    
+    if (N.TRIES == 0L) {
+        stop("'useMart()' failed:",
+             "\n  error: ", conditionMessage(ensembl))
+    }
+    #####
     # ensembl = useMart(biomart="ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl") # --- for current version
+    
     transc_ids = hotspot_results$Repres_tr
     prot_seq = getSequence (id = transc_ids, type= "ensembl_transcript_id", seqType = "peptide", mart = ensembl)
     

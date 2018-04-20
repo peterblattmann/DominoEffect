@@ -1,3 +1,9 @@
+CHANGES IN VERSION 0.99.4
+-------------------------
+NEW FEATURES
+
+ o add code to fail gracefully if ensembl is down
+
 CHANGES IN VERSION 0.99.3
 -------------------------
 NEW FEATURES
