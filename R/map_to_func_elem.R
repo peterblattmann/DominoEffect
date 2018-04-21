@@ -5,6 +5,8 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
     }
     ###
     
+    
+    
     message ("  Obtaining sequences of proteins encoded by the representative Ensembl transcripts.")
     
     if (ens_release == 73) {
@@ -55,10 +57,51 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
             {
             if(nchar(unip_acc) == 6){
                 retrieve_unip <- paste("http://www.uniprot.org/uniprot/", unip_acc, ".gff", sep = "")
-                gff.file[[unip_acc]] <- read.delim(retrieve_unip, skip = 2, header = FALSE)
+                
+                #####
+                # to fail gracefully if Uniprot is not accessible
+                # code from http://bioconductor.org/developers/how-to/web-query/
+                N.TRIES <- as.integer(5)
+                stopifnot(length(N.TRIES) == 1L, !is.na(N.TRIES))
+                
+                while (N.TRIES > 0L) {
+                    result <- tryCatch(read.delim(retrieve_unip, skip = 2, header = FALSE), error=identity)
+                    if (!inherits(result, "error"))
+                        break
+                    N.TRIES <- N.TRIES - 1L
+                }
+                
+                if (N.TRIES == 0L) {
+                    stop("Retrieving sequence from Uniprot failed:\n",
+                         retrieve_unip,
+                         "\n  error: ", conditionMessage(result))
+                }
+                #####
+                gff.file[[unip_acc]] <- result
                     
                 retrieve_unip <- paste ("http://www.uniprot.org/uniprot/", unip_acc, ".fasta", sep = "")
-                uni.sequences <- c(uni.sequences, readAAStringSet(retrieve_unip))
+                
+                #####
+                # to fail gracefully if Uniprot is not accessible
+                # code from http://bioconductor.org/developers/how-to/web-query/
+                N.TRIES <- as.integer(5)
+                stopifnot(length(N.TRIES) == 1L, !is.na(N.TRIES))
+                
+                while (N.TRIES > 0L) {
+                    result <- tryCatch(readAAStringSet(retrieve_unip), error=identity)
+                    if (!inherits(result, "error"))
+                        break
+                    N.TRIES <- N.TRIES - 1L
+                }
+                
+                if (N.TRIES == 0L) {
+                    stop("Reading sequence from Uniprot failed:\n",
+                         , retrieve_unip,
+                         "\n  error: ", conditionMessage(result))
+                }
+                #####
+                
+                uni.sequences <- c(uni.sequences, result)
                     
             }else {
                 warning("IDs for following uniprot accessions could not be retrieved:", unip_acc, " that corresponds to:", gene_ens, ".")
