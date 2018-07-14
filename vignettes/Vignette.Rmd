@@ -18,9 +18,9 @@ library(knitr)
 
 The package can be directly installed from the Bioconductor website.
 ```{r, eval=FALSE}
-## try http:// if https:// URLs are not supported
-source('https://bioconductor.org/biocLite.R')
-biocLite('DominoEffect')
+if (!require("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install("DominoEffect")
 ```
 
 
