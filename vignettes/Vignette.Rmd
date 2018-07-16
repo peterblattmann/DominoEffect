@@ -24,7 +24,7 @@ BiocManager::install("DominoEffect")
 ```
 
 
-##Running the package
+## Running the package
 Load the package before starting the analysis.
 
 ```{r}
