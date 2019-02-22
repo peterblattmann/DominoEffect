@@ -1,4 +1,4 @@
-map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release = "73"){
+map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release = "75"){
     ## Checking for argument requirements
     if(!(write_to_file %in% c("YES", "NO"))){
         stop("write_to_file should either be YES or NO")
@@ -9,9 +9,8 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
     
     message ("  Obtaining sequences of proteins encoded by the representative Ensembl transcripts.")
     
-    if (ens_release == 73) {
-        #ens_database <- "sep2013.archive.ensembl.org"
-        ens_database <- "dec2013.archive.ensembl.org"
+    if (ens_release == 75) {
+        ens_database <- "feb2014.archive.ensembl.org"
     } else {
         ens_database <- ens_release
     }
