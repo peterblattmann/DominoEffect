@@ -1,5 +1,11 @@
 CHANGES IN VERSION 1.1.2
 -------------------------
+UDPATE
+
+ o change Ensembl version from 73 to 75
+
+CHANGES IN VERSION 1.1.2
+-------------------------
 BUG FIX
 
  o add missing space to vignette
