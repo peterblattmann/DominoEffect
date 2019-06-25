@@ -12,9 +12,9 @@ GPo_of_hotspots <- function(hotspot_mutations){
     prot_residue_info <- data.frame(do.call('rbind', 
                                             strsplit(as.character(hotspots_genomic_info$AA_position),
                                                      '-',fixed=TRUE)))
-    chr_info <- paste ("chr", hotspots_genomic_info$Genomic_coordinate, "-", 
-                       coordinates_sep$X2, sep = "")
-    hotspots_GPo <- GPos(chr_info)
+    chr_info = paste("chr", coordinates_sep$X1)
+    position_on_chr = coordinates_sep$X2
+    hotspots_GPo <- GPos(seqnames=chr_info, pos= position_on_chr, stitch=FALSE)
     
     GenomicRanges::mcols(hotspots_GPo)$REF_NT <- as.character(hotspots_genomic_info$Original_base)
     GenomicRanges::mcols(hotspots_GPo)$MUT_NT <- as.character(hotspots_genomic_info$Mutated_base)

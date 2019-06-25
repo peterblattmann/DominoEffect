@@ -110,11 +110,10 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
     if(length(snp_data) > 0){
         ### convert data.frame into GPos 
         if(class(snp_data) == "data.frame"){
-            chr_info <- paste("chr", snp_data$Chr_name,":", 
-                              snp_data$Position_on_chr, "-", 
-                              snp_data$Position_on_chr, sep = "")
+            chr_info <- paste("chr", snp_data$Chr_name)
             freq_info <- snp_data$Minor_allele_freq
-            snp_data <- GPos(chr_info)
+            position_on_chr <- snp_data$Position_on_chr
+            snp_data <- GPos(seqnames=chr_info, pos= position_on_chr, stitch=FALSE)
             GenomicRanges::mcols(snp_data)$Minor_allele_freq <- freq_info
         }
         
@@ -129,9 +128,9 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
             snps <- variant_start == variant_end
             chromosomes <- as.character(seqnames(coords_common_vars[snps]))
             freq_info <- vcf_table[common_vars[snps],"LDAF"]
-            chr_info <- paste("chr", chromosomes,":", 
-                              variant_start[snps], "-", variant_end[snps], sep = "")
-            snp_data <- GPos(chr_info)
+            chr_info = paste("chr", chromosomes)
+            position_on_chr = variant_start[snps]
+            snp_data <- GPos(seqnames=chr_info, pos= position_on_chr, stitch=FALSE)
             GenomicRanges::mcols(snp_data)$Minor_allele_freq <- freq_info
         }
         
