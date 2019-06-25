@@ -1,11 +1,14 @@
 GPo_of_hotspots <- function(hotspot_mutations){
-    hotspot_mutations$AA_position <- paste(hotspot_mutations$Ensembl_id, 
-                                           "-", hotspot_mutations$Prot_position, sep = "")
+    hotspot_mutations$AA_position <- paste(hotspot_mutations$Ensembl_id, "-", 
+                                           hotspot_mutations$Prot_position, 
+                                           sep = "")
     TestData$AA_position <- paste(TestData$Ensembl_gene_id, "-", 
                                   TestData$Protein_residue, sep = "")
-    cols_of_interest <- c("Genomic_coordinate", "Original_base", "Mutated_base", "AA_position")
+    cols_of_interest <- c("Genomic_coordinate", "Original_base", 
+                          "Mutated_base", "AA_position")
     hotspots_genomic_info <- unique(TestData[TestData$AA_position %in% 
-                                                 hotspot_mutations$AA_position, cols_of_interest])
+                                                 hotspot_mutations$AA_position, 
+                                             cols_of_interest])
     coordinates_sep <- data.frame(do.call('rbind', 
                                           strsplit(as.character(hotspots_genomic_info$Genomic_coordinate),
                                                    ':',fixed=TRUE)))

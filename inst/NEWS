@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.5.2
+-------------------------
+UDPATE
+
+ o Change class() == to is()
+
+
 CHANGES IN VERSION 1.5.1
 -------------------------
 UDPATE

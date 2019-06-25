@@ -1,5 +1,5 @@
 import_txdb <- function(txdb_object){
-    if(class(txdb_object) != "TxDb"){
+    if(!is(txdb_object, "TxDb")){
         stop("Input file needs to be of class TxDb")
     }
     genes <- keys(txdb_object, keytype = "GENEID")

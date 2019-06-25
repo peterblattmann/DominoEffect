@@ -8,22 +8,22 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
     if(length(min_n_muts) != 1L){
         stop("min_n_muts should be an integer.")
     }
-    if(!(length(MAF_thresh) == 1 & class(MAF_thresh) == "numeric" & 
+    if(!(length(MAF_thresh) == 1 & is.numeric(MAF_thresh) & 
          MAF_thresh < 1)){
         stop("MAF_thresh must representing a valid minor allele 
              threshold below 1.")
     }
-    if(!(length(poisson.thr) == 1 & class(poisson.thr) == "numeric" & 
+    if(!(length(poisson.thr) == 1 & is.numeric(poisson.thr) & 
          poisson.thr < 1)){
         stop("poisson.thr must representing a valid probability 
              threshold below 1.")
     }
-    if(!(length(percentage.thr) == 1 & class(percentage.thr) == "numeric" & 
+    if(!(length(percentage.thr) == 1 & is.numeric(percentage.thr) & 
          percentage.thr < 1)){
         stop("percentage.thr must representing a valid percentage 
              threshold below 1.")
     }
-    if(!(length(ratio.thr) == 1 & class(ratio.thr) == "numeric" & 
+    if(!(length(ratio.thr) == 1 & is.numeric(ratio.thr) & 
          ratio.thr > 1)){
         stop("ratio.thr must representing a valid ratio 
              threshold above 1.")
@@ -67,13 +67,13 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
     ###
     
     # unlist GRangesList object
-    if(class(mutation_dataset) == "GRangesList"){
+    if(is(mutation_dataset, "GRangesList")){
         mutation_dataset <- unlist(mutation_dataset, use.names=FALSE)
         data_type <- class(mutation_dataset)
     }
     
     # retrieve data from GRanges object
-    if(class(mutation_dataset) == "GRanges"){
+    if(is(mutation_dataset, "GRanges")){
         chr_nu <- as.numeric(seqnames (mutation_dataset))
         positions <- start(mutation_dataset)
         single_nt_ctrl <- end(mutation_dataset)
@@ -103,13 +103,13 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
     }
     
     # if gene_data is provided in TxDB format convert to data frame
-    if(class(gene_data) == "TxDb"){
+    if(is(gene_data, "TxDb")){
         gene_data <- import_txdb(gene_data)
     }
     
     if(length(snp_data) > 0){
         ### convert data.frame into GPos 
-        if(class(snp_data) == "data.frame"){
+        if(is(snp_data, "data.frame")){
             chr_info <- paste("chr", snp_data$Chr_name)
             freq_info <- snp_data$Minor_allele_freq
             position_on_chr <- snp_data$Position_on_chr
@@ -118,7 +118,7 @@ identify_hotspots <- function(mutation_dataset, gene_data , snp_data,
         }
         
         ### convert vcf into GPos 
-        if(class(snp_data) == "CollapsedVCF"){
+        if(is(snp_data, "CollapsedVCF")){
             vcf_table <- info(snp_data)    ### za frequency
             coords <- rowRanges(snp_data)
             common_vars <- row.names(vcf_table[vcf_table$LDAF > MAF_thresh, ])

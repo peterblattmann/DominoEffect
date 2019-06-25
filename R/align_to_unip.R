@@ -1,10 +1,10 @@
 align_to_unip <- function(ens.seq, uni.seq, ensembl_mut_position){
     ### Checking for argument requirements
-    if(class(ens.seq) != "AAString"){
+    if(!is(ens.seq, "AAString")){
         print(ens.seq)
         stop("Ensembl sequence must be of class AAString")
     }
-    if(class(uni.seq) != "AAString"){
+    if(!is(uni.seq, "AAString")){
         stop("Uniprot sequence must be of class AAString")
     }
     if(length(ensembl_mut_position) != 1L){

@@ -10,7 +10,7 @@ ratio.thr = 45, approach = "percentage", write_to_file = "NO"){
                                  approach)
 
     hotspot_mutations <- map_to_func_elem(results, write_to_file, 
-                                          ens_release = "75")
+                                          ens_release = "http://feb2014.archive.ensembl.org")
     message ("   ***FINISHED***")
     return(hotspot_mutations)
 }
