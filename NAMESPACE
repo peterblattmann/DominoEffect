@@ -30,3 +30,5 @@ importFrom(AnnotationDbi, select, keys)
 importFrom(SummarizedExperiment, rowRanges)
 importFrom(IRanges, ranges)
 importFrom(GenomicRanges, GPos, mcols, pos)
+
+importFrom(methods, is)

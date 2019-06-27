@@ -2,6 +2,13 @@ CHANGES IN VERSION 1.5.2
 -------------------------
 UDPATE
 
+ o adding importFrom(methods, is)
+
+
+CHANGES IN VERSION 1.5.2
+-------------------------
+UDPATE
+
  o Change class() == to is()
 
 
