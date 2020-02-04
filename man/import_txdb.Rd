@@ -15,7 +15,7 @@
 \examples{
 
 #EnsTxDB <- makeTxDbFromEnsembl(organism="Homo sapiens", release=73, 
-#   circ_seqs=DEFAULT_CIRC_SEQS,server="ensembldb.ensembl.org")
+#                               server="ensembldb.ensembl.org")
 #DominoData <- import_txdb(EnsTxDB)
 #head(DominoData)
 
