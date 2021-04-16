@@ -4,7 +4,7 @@ author: "Marija Buljan and Peter Blattmann"
 date: '`r format(Sys.time(), "%d %B %Y")`'
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteEngine{knitr::knitr}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Vignette for DominoEffect package}
   %\usepackage[UTF-8]{inputenc}
 ---
