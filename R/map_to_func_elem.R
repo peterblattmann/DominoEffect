@@ -4,13 +4,10 @@ map_to_func_elem <- function(hotspot_results, write_to_file = "NO", ens_release 
         stop("write_to_file should either be YES or NO")
     }
     ###
-    
-    
-    
     message ("  Obtaining sequences of proteins encoded by the representative Ensembl transcripts.")
     
     if(ens_release == 75) {
-        ens_database <- "feb2014.archive.ensembl.org"
+        ens_database <- "https://feb2014.archive.ensembl.org"
     } else {
         ens_database <- ens_release
     }
