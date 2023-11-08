@@ -6,7 +6,8 @@
 min_n_muts = 5, MAF_thresh = 0.01,
 flanking_region = c(200, 300),
 poisson.thr = 0.01, percentage.thr = 0.15,
-ratio.thr = 45, approach = "percentage", write_to_file = "NO")
+ratio.thr = 45, approach = "percentage", write_to_file = "NO",
+ens_release = "https://feb2023.archive.ensembl.org")
 }
 \arguments{
   \item{mutation_dataset}{Object containing a table with the mutation data (e.g. TCGA point mutations mapped to protein level).}
@@ -32,6 +33,8 @@ ratio.thr = 45, approach = "percentage", write_to_file = "NO")
   \item{approach}{Option to define selection criteria to use precentage.thr or ratio.thr as criterion for finding single residue mutation clusters. Options: "both", "percentage" or "ratio". Default = "percentage"}
 
   \item{write_to_file}{Option if the identified and annotated hotspots should be written to a file (YES or NO). Default: NO}
+  
+  \item{ens_release}{Release of ensembl to be used. Default: https://feb2023.archive.ensembl.org}
 
 }
 \value{Results table}

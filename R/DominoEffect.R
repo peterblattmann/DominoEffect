@@ -3,7 +3,7 @@ DominoEffect <- function(mutation_dataset, gene_data, snp_data,
                          flanking_region = c(200, 300),
                          poisson.thr = 0.01, percentage.thr = 0.15,
                          ratio.thr = 45, approach = "percentage", write_to_file = "NO",
-                         ens_release = "https://feb2014.archive.ensembl.org"){
+                         ens_release = "https://feb2023.archive.ensembl.org"){
   
   results <- identify_hotspots(mutation_dataset, gene_data, snp_data,
                                min_n_muts, MAF_thresh, flanking_region,
